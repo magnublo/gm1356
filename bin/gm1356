@@ -60,7 +60,7 @@ begin
     device = get_device(options)
     next
   end
-rescue LIBUSB::Error
+rescue LIBUSB::Error, HIDAPI::HidApiError
   device = get_device(options)
   retry
 rescue Exception # rubocop:disable Lint/RescueException
