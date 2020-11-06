@@ -1,10 +1,21 @@
-#!ruby
+#!/usr/bin/ruby
 # frozen_string_literal: true
 
 require 'optparse'
 require_relative '../lib/gm1356'
 
 options = {}
+
+def get_device(options)
+  device = nil
+  loop do
+    device = GM1356::Device.new(options)
+    break
+  rescue NoMethodError
+    next
+  end
+  return device
+end
 
 OptionParser.new do |opts|
   opts.banner = 'Usage: gm1356 [options]'
@@ -37,13 +48,21 @@ OptionParser.new do |opts|
   end
 end.parse!
 
-device = GM1356::Device.new(options)
+device = get_device(options)
 
 begin
   device.read do |record|
     print record.to_s
     print "\n"
+  rescue NoMethodError
+    next
+  rescue LIBUSB::Error
+    device = get_device(options)
+    next
   end
+rescue LIBUSB::Error
+  device = get_device(options)
+  retry
 rescue Exception # rubocop:disable Lint/RescueException
   device.close
   raise
