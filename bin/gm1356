@@ -4,6 +4,7 @@
 require 'optparse'
 require_relative '../lib/gm1356'
 
+$stdout.sync = true
 options = {}
 
 def get_device(options)
