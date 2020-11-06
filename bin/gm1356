@@ -11,7 +11,7 @@ def get_device(options)
   loop do
     device = GM1356::Device.new(options)
     break
-  rescue NoMethodError
+  rescue NoMethodError, HIDAPI::HidApiError
     next
   end
   return device
